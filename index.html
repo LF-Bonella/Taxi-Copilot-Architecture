@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0f17" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <title>Taxi Copilot · Rio</title>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- TOPO: banner de manobra (navegando) ou comando do veterano (vazio) -->
+    <div id="top">
+      <div id="maneuver" class="hidden">
+        <div id="mv-icon"></div>
+        <div class="mv-body">
+          <div id="mv-dist"></div>
+          <div id="mv-text"></div>
+        </div>
+      </div>
+      <div id="lanes" class="hidden"></div>
+      <div id="then" class="hidden"></div>
+      <div id="command">
+        <div class="cmd-head">
+          <span id="shift-badge"></span>
+          <span id="calendar-chip" title="Calendário Civil & Sazonalidade"></span>
+          <button id="gnv-chip" type="button" title="Monitor de GNV & Postos (Clique para gerenciar)"></button>
+          <span class="spacer"></span>
+          <span id="weather-chip" title="Clima (Open-Meteo)"></span>
+          <span id="clock"></span>
+          <button id="cmd-expand-btn" type="button" class="cmd-expand-btn" title="Expandir ou recolher dica do veterano">▼</button>
+        </div>
+        <div id="cmd-text">Carregando o cérebro do veterano…</div>
+      </div>
+
+      <div class="hud-float-row">
+        <div class="hud-left">
+          <div id="speed"><b id="speed-val">0</b><small>km/h</small></div>
+          <div id="sim-badge" class="hidden">🧪 SIM</div>
+        </div>
+        <div id="side">
+          <button id="btn-theme" title="Modo Claro/Escuro (Alto Contraste)">☀️</button>
+          <button id="btn-voice" title="Voz liga/desliga">🔊</button>
+          <button id="btn-repeat" title="Repetir comando">🔁</button>
+          <button id="btn-recenter" title="Recentralizar">◎</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL INFERIOR -->
+    <div id="sheet">
+      <div id="trip-bar" class="hidden">
+        <div class="trip-meter">
+          <small>ESTIMADOR DE CORRIDA</small>
+          <b id="trip-fare">R$ 0,00</b>
+        </div>
+        <div class="trip-stats"><span id="trip-km">0,0 km</span><span id="trip-time">0 min</span></div>
+        <button id="btn-trip-end" class="danger">FINALIZAR</button>
+      </div>
+
+      <div id="idle-panel">
+        <button id="sheet-handle" class="sheet-handle" type="button" title="Minimizar ou expandir painel para ver o mapa livre">
+          <span class="handle-bar"></span>
+          <span id="sheet-handle-label">▼ Minimizar painel · Ver mapa</span>
+        </button>
+
+        <div class="action-duo">
+          <button id="btn-pesca" class="huge green">▶ ROTA DE PESCA</button>
+          <button id="btn-trip" class="big yellow">🚖 PASSAGEIRO</button>
+        </div>
+
+        <div id="idle-collapsible">
+          <div class="search">
+            <input id="search" type="search" autocomplete="off" placeholder="🔎 Para onde? (destino do passageiro)" />
+            <div id="results"></div>
+          </div>
+          <div id="best-zones"></div>
+          <div class="reports">
+            <button data-report="BLITZ">🚨<span>Blitz</span></button>
+            <button data-report="ROAD_CLOSED">⛔<span>Bloqueio</span></button>
+            <button data-report="HEAVY_TRAFFIC">🚗<span>Trânsito</span></button>
+            <button data-report="DEAD_ZONE">🚧<span>Rua morta</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div id="preview-panel" class="hidden">
+        <div id="preview-title"></div>
+        <div id="alts"></div>
+        <div id="preview-warn"></div>
+        <div class="row">
+          <button id="btn-preview-cancel" class="big ghost">Cancelar</button>
+          <button id="btn-preview-go" class="big green">INICIAR ▶</button>
+        </div>
+      </div>
+
+      <div id="nav-panel" class="hidden">
+        <div class="nav-info">
+          <div><b id="nav-eta">--:--</b><small>chegada</small></div>
+          <div><b id="nav-time">--</b><small>restante</small></div>
+          <div><b id="nav-dist">--</b><small>distância</small></div>
+        </div>
+        <div id="nav-kind"></div>
+        <div class="row">
+          <button id="btn-nav-stop" class="big danger">✕ Encerrar</button>
+          <button id="btn-nav-overview" class="big ghost">🗺️ Visão geral</button>
+        </div>
+      </div>
+    </div>
+
+    <nav id="tabs">
+      <button data-tab="map" class="active">🧭<span>Navegar</span></button>
+      <button data-tab="radar">🎤<span>Radar</span></button>
+      <button data-tab="ganhos">💰<span>Ganhos</span></button>
+      <button data-tab="lab">🧪<span>Testes</span></button>
+    </nav>
+
+    <section id="drawer" class="hidden">
+      <header><h2 id="drawer-title"></h2><button id="drawer-close">✕</button></header>
+      <div id="drawer-body"></div>
+    </section>
+
+    <!-- CENTRAL DE OPERAÇÕES / TORRE DE CONTROLE (PC / OPERADOR) -->
+    <aside id="central-dock" class="hidden">
+      <header class="central-header">
+        <div>
+          <div class="central-badge" id="central-sync-badge">🟢 SANDBOX REALTIME · SHOWCASE</div>
+          <h2>🖥️ Central de Operações (Demo)</h2>
+        </div>
+        <div class="row" style="gap:6px">
+          <button id="central-close" class="ghost" style="padding:8px 12px;font-size:12px;font-weight:800" title="Voltar para visão do motorista">📱 Visão Motorista</button>
+        </div>
+      </header>
+      <div class="central-nav">
+        <button data-ctab="events" class="active">🎤 Eventos & Radar</button>
+        <button data-ctab="dispatch">🚨 Rádio & Bloqueios</button>
+        <button data-ctab="telemetry">🚕 Telemetria Demo</button>
+        <button data-ctab="analytics">📊 Planilha & Gestão</button>
+      </div>
+      <div id="central-body"></div>
+    </aside>
+
+    <div id="overlay" class="hidden"></div>
+    <div id="ctxmenu" class="hidden"></div>
+    <div id="toast"></div>
+    <div id="splash">
+      <div>
+        <div class="splash-logo">🚕</div>
+        <h1>Taxi Copilot · Showcase</h1>
+        <p>PWA de Apoio Operacional & Inteligência Geoespacial · Rio de Janeiro</p>
+        <button id="btn-start" class="huge yellow">▶ INICIAR DEMO (COCKPIT SIMULADO)</button>
+        <button id="btn-start-central" class="big ghost" style="margin-top:10px;border-color:#3b82f6;color:#93c5fd">🖥️ ABRIR CENTRAL DE OPERAÇÕES (DADOS SINTÉTICOS)</button>
+        <button id="btn-install-pwa" class="big green" style="margin-top:10px">📲 INSTALAR APP NO CELULAR (PWA)</button>
+        <small>Edição de Portfólio Independente · Dados 100% Sintéticos · Zero-LLM-Token Engine</small>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

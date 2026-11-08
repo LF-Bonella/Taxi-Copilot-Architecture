@@ -1,0 +1,25 @@
+{
+  "name": "taxi-copilot-architecture",
+  "private": true,
+  "version": "1.5.0-showcase",
+  "description": "Taxi Copilot · Showcase Edition — PWA de Apoio Operacional, Inteligência Geoespacial e Controle Financeiro para Mobilidade Urbana (Rio de Janeiro)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "dev:https": "vite --host --mode https",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.119.0",
+    "maplibre-gl": "^6.16.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
+  }
+}

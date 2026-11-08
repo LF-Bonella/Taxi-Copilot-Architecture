@@ -1,0 +1,34 @@
+name: 🚕 Taxi Copilot Showcase · CI (TypeCheck, Vitest & Build)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  validate-showcase:
+    name: TypeScript Strict, Vitest (21 Tests) & Production Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm ci
+
+      - name: Verificação Estática de Tipos (TypeScript Strict)
+        run: npm run typecheck
+
+      - name: Executar Suíte de Testes Unitários (Vitest)
+        run: npm test
+
+      - name: Validar Compilação de Produção (Vite PWA Bundle)
+        run: npm run build
