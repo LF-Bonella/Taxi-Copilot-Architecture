@@ -6,6 +6,8 @@
 [![Engine](https://img.shields.io/badge/decision%20core-deterministic%20%28zero--LLM--token%29-f59e0b.svg)](./ARCHITECTURE.md)
 [![Sandbox](https://img.shields.io/badge/mode-100%25%20synthetic%20showcase-8b5cf6.svg)](./src/services/cloudSync.ts)
 
+<img width="2912" height="1440" alt="Taxi-Copilot Logo" src="https://github.com/user-attachments/assets/fa144c74-d73b-4349-b239-e75e973aba65" />
+
 ⚠️ **Nota: Este é um repositório de portfólio demonstrativo (Showcase Edition).**
 Este projeto é a versão pública e autossuficiente ("Vitrine Arquitetural") do **Taxi Copilot**, disponibilizada com o objetivo de demonstrar engenharia de produto ponta a ponta, desenvolvimento geoespacial, arquitetura *Local-First* e integração de sistemas em tempo real.
 - **Isolamento Total de Privacidade:** Esta edição opera por padrão em **Modo Sandbox Independente** com dados 100% fictícios/sintéticos e simulador GPS integrado, sem qualquer conexão ou telemetria compartilhada com a edição privada de operação real.
