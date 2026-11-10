@@ -126,6 +126,15 @@ export function parseFlyer(input: FlyerInput): Opportunity {
   };
 }
 
+function parseEventDate(isoStr: string): Date {
+  const m = isoStr.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+  if (m) {
+    const [, yr, mo, dy, hr, min, sec] = m;
+    return new Date(+yr, +mo - 1, +dy, +hr, +min, +sec);
+  }
+  return new Date(isoStr);
+}
+
 /** Extrai eventos de JSON-LD (schema.org/Event) colado de Sympla, Eventim, Ingresse, Fever... */
 export function parseJsonLd(json: string, fallbackEscape?: Venue): Opportunity[] {
   let data: unknown;
@@ -155,7 +164,7 @@ export function parseJsonLd(json: string, fallbackEscape?: Venue): Opportunity[]
     const known = RIO_VENUES.find((v) => venueName.toLowerCase().includes(v.name.toLowerCase().split(' ')[0].toLowerCase()));
     const venue: LngLat | undefined = Number.isFinite(lat) && Number.isFinite(lng) ? [lng, lat] : known?.pos ?? fallbackEscape?.pos;
     if (!venue || !ev.startDate) return [];
-    const start = new Date(ev.startDate);
+    const start = parseEventDate(String(ev.startDate));
     if (isNaN(start.getTime())) return [];
     const offers = Array.isArray(ev.offers) ? ev.offers : ev.offers ? [ev.offers] : [];
     const soldOut = offers.some((o: any) => /SoldOut/i.test(o.availability ?? ''));
@@ -172,7 +181,7 @@ export function parseJsonLd(json: string, fallbackEscape?: Venue): Opportunity[]
       source: 'json-ld',
     });
     if (ev.endDate) {
-      const end = new Date(ev.endDate).getTime();
+      const end = parseEventDate(String(ev.endDate)).getTime();
       if (!isNaN(end) && end > opp.eventStart) {
         opp.estimatedEnd = end;
         opp.goldenArrival = end - 25 * 60000;
